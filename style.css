@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap');
-
+@import url('http://fonts.cdnfonts.com/css/lcd?styles=116384,116385,116383,116382,116388,116392,116396,116389,116393,116397,116387,116391,116395,116386,116390,116394');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -91,3 +91,90 @@ select {
 }
 
 /* CSS Reset end */
+
+body {
+  background-image: radial-gradient(
+    circle 592px at 48.2% 50%,
+    rgba(255, 255, 249, 0.6) 0%,
+    rgba(160, 199, 254, 1) 74.6%
+  );
+}
+
+.calculator {
+  max-width: 375px;
+  margin: 100px auto 0;
+  background: #101a22;
+  border-radius: 25px;
+  padding: 30px;
+  color: #f1f1f1;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.display {
+  font-weight: 200;
+  padding: 60px 15px;
+  margin-bottom: 25px;
+  border-radius: 25px;
+  border: 1px solid rgb(97, 97, 97);
+  background-color: #23303b;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 5px 8px #191919, inset 0 -1px 6px #06121d;
+}
+
+.calculation,
+.result {
+  position: absolute;
+  right: 20px;
+}
+
+.calculation {
+  font-family: 'LCD', sans-serif ;
+  font-weight: 200;
+  font-size: 22px;
+  top: 20px;
+}
+.result {
+  font-family: 'LCDMono', sans-serif;
+  font-weight: 400;
+  font-size: 26px;
+  bottom: 10px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 60px;
+  grid-gap: 20px;
+}
+
+.grid button {
+  font-size: 22px;
+  border: none;
+  font-family: Poppins, sans-serif;
+  cursor: pointer;
+  color: #f1f1f1;
+  font-weight: 100;
+  border-radius: 10px;
+  background: #101a22;
+  box-shadow: 0 4px 8px #000000, 0px -1px 6px #41484e;
+}
+
+button[data-action='c'] {
+  grid-column: span 2;
+}
+
+button[data-action='='] {
+  grid-column: span 2;
+  font-weight: 400;
+  font-size: 30px;
+  color: #101a22;
+  background-image: linear-gradient(45deg, #fcc359, #f3bf61);
+}
+
+button[data-action='='] {
+  font-weight: 400;
+  font-size: 30px;
+  color: #101a22;
+  background-image: linear-gradient(45deg, #fcc359, #f3bf61);
+}

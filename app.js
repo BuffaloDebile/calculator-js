@@ -24,7 +24,7 @@ function handleDigits(e) {
 }
 
 const operatorsBtns = buttons.filter((button) =>
-  /[\/+*-]/.test(button.getAttribute('data-action')),
+  /[\/+*-.]/.test(button.getAttribute('data-action')),
 );
 
 operatorsBtns.forEach((btn) => btn.addEventListener('click', handleOperators));
@@ -45,4 +45,96 @@ function handleOperators(e) {
     calculatorData.calculation += buttonValue;
     resultDisplay.textContent = calculatorData.calculation;
   }
+}
+
+const equalBtn = document.querySelector("[data-action='='");
+
+equalBtn.addEventListener('click', handleEqualBtn);
+
+function handleEqualBtn() {
+  if (/[\/+*-.]/.test(calculatorData.calculation.slice(-1))) {
+    calculationDisplay.textContent = 'Please end the calculation with a number';
+    setTimeout(() => {
+      calculationDisplay.textContent = '';
+    }, 2500);
+    return;
+  } else if (!calculatorData.displayedResults) {
+    calculatorData.result = customEval(calculatorData.calculation);
+  }
+}
+
+customEval('5500*10');
+
+function customEval(calculation) {
+  if (!/[\/+*-]/.test(calculation.slice(1))) return;
+  calculation;
+
+  let operator;
+  let operatorIndex;
+
+  if (/[\/*]/.test(calculation.slice(1))) {
+    for (let i = 1; i < calculation.length; i++) {
+      if (/[\/*]/.test(calculation[i])) {
+        operator = calculation[i];
+        operatorIndex = i;
+        break;
+      }
+    }
+  } else {
+    for (let i = 1; i < calculation.length; i++) {
+      if (/[+-]/.test(calculation[i])) {
+        operator = calculation[i];
+        operatorIndex = i;
+        break;
+      }
+    }
+  }
+
+  const operands = getIndexes(operatorIndex, calculation);
+  console.log(operands);
+}
+
+function getIndexes(operatorIndex, calculation) {
+  let rightOperand = '';
+  let endIntervalIndex;
+
+  for (let i = operatorIndex + 1; i <= calculation.length; i++) {
+    if (i === calculation.length) {
+      endIntervalIndex = calculation.length;
+      break;
+    } else if (/[\/+*-]/.test(calculation[i])) {
+      endIntervalIndex = i;
+      break;
+    } else {
+      rightOperand += calculation[i];
+    }
+  }
+
+  let leftOperand = '';
+  let startIntervalIndex;
+
+  for (let i = operatorIndex - 1; i >= 0; i--) {
+    if (i === 0 && /[-]/.test(calculation[i])) {
+      startIntervalIndex = 0;
+      leftOperand += '-';
+      break;
+    } else if (i === 0) {
+      startIntervalIndex = 0;
+      leftOperand += calculation[i];
+      break;
+    } else if (/[\/+*-]/.test(calculation[i])) {
+      startIntervalIndex = i + 1;
+      break;
+    } else {
+      leftOperand += calculation[i];
+    }
+  }
+
+  leftOperand = leftOperand.split('').reverse().join('');
+  return {
+    leftOperand,
+    rightOperand,
+    startIntervalIndex,
+    endIntervalIndex,
+  };
 }

@@ -129,10 +129,11 @@ body {
 }
 
 .calculation {
-  font-family: 'LCD', sans-serif ;
+  font-family: 'LCD', sans-serif;
   font-weight: 200;
   font-size: 22px;
   top: 20px;
+  padding: 0 10px;
 }
 .result {
   font-family: 'LCDMono', sans-serif;

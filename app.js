@@ -90,20 +90,50 @@ function customEval(calculation) {
     }
   }
 
-  const operands = getIndexes(operatorIndex, calculation);
-  console.log(operands);
+  const operandsInfo = getIndexes(operatorIndex, calculation);
+
+  let currentCalculationResult = undefined;
+
+  switch (operator) {
+    case '+':
+      currentCalculationResult =
+        Number(operandsInfo.leftOperand) + Number(operandsInfo.rightOperand);
+      break;
+    case '-':
+      currentCalculationResult =
+        Number(operandsInfo.leftOperand) - Number(operandsInfo.rightOperand);
+      break;
+    case '*':
+      currentCalculationResult =
+        Number(operandsInfo.leftOperand) * Number(operandsInfo.rightOperand);
+      break;
+    case '/':
+      currentCalculationResult =
+        Number(operandsInfo.leftOperand) / Number(operandsInfo.rightOperand);
+      break;
+  }
+
+  console.log(calculation);
+  let updatedCalculation = calculation.replace(
+    calculation.slice(
+      operandsInfo.startIntervalIndex,
+      operandsInfo.lastRightOperandCharacter,
+    ),
+    currentCalculationResult.toString(),
+  );
+  console.log(updatedCalculation);
 }
 
 function getIndexes(operatorIndex, calculation) {
   let rightOperand = '';
-  let endIntervalIndex;
+  let lastRightOperandCharacter;
 
   for (let i = operatorIndex + 1; i <= calculation.length; i++) {
     if (i === calculation.length) {
-      endIntervalIndex = calculation.length;
+      lastRightOperandCharacter = calculation.length;
       break;
     } else if (/[\/+*-]/.test(calculation[i])) {
-      endIntervalIndex = i;
+      lastRightOperandCharacter = i;
       break;
     } else {
       rightOperand += calculation[i];
@@ -135,6 +165,6 @@ function getIndexes(operatorIndex, calculation) {
     leftOperand,
     rightOperand,
     startIntervalIndex,
-    endIntervalIndex,
+    lastRightOperandCharacter,
   };
 }

@@ -60,10 +60,13 @@ function handleEqualBtn() {
     return;
   } else if (!calculatorData.displayedResults) {
     calculatorData.result = customEval(calculatorData.calculation);
+    resultDisplay.textContent = calculatorData.result;
+    calculationDisplay.textContent = calculatorData.calculation;
+    calculatorData.displayedResults = true;
   }
 }
 
-customEval('5500*10');
+console.log(customEval('11/2'));
 
 function customEval(calculation) {
   if (!/[\/+*-]/.test(calculation.slice(1))) return;
@@ -113,7 +116,6 @@ function customEval(calculation) {
       break;
   }
 
-  console.log(calculation);
   let updatedCalculation = calculation.replace(
     calculation.slice(
       operandsInfo.startIntervalIndex,
@@ -121,7 +123,18 @@ function customEval(calculation) {
     ),
     currentCalculationResult.toString(),
   );
-  console.log(updatedCalculation);
+  if (/[\/+*-]/.test(updatedCalculation.slice(1))) {
+    customEval(updatedCalculation);
+  }
+  if (updatedCalculation.includes('.')) {
+    if (updatedCalculation.split('.')[1].length === 1) {
+      return Number(updatedCalculation).toString();
+    } else if (updatedCalculation.split('.')[1].length > 1) {
+      return Number(updatedCalculation).toFixed(2).toString();
+    }
+  } else {
+    return updatedCalculation;
+  }
 }
 
 function getIndexes(operatorIndex, calculation) {

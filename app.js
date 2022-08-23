@@ -16,8 +16,12 @@ const resultDisplay = document.querySelector('.result');
 
 function handleDigits(e) {
   const buttonValue = e.target.getAttribute('data-action');
-
-  if (calculatorData.calculation === 0) calculatorData.calculation = '';
+  if (calculatorData.displayedResults) {
+    calculationDisplay.textContent = '';
+    calculatorData.calculation = calculatorData.result = +buttonValue;
+    resultDisplay.textContent = calculatorData.calculation;
+    calculatorData.displayedResults = false;
+  } else if (calculatorData.calculation === 0) calculatorData.calculation = '';
 
   calculatorData.calculation += buttonValue;
   resultDisplay.textContent = calculatorData.calculation;
@@ -32,16 +36,26 @@ operatorsBtns.forEach((btn) => btn.addEventListener('click', handleOperators));
 function handleOperators(e) {
   const buttonValue = e.target.getAttribute('data-action');
 
-  if (!calculatorData.calculation && buttonValue === '-') {
+  if (calculatorData.displayedResults) {
+    calculationDisplay.textContent = '';
+    calculatorData.calculation = calculatorData.result += buttonValue;
+    resultDisplay.textContent = calculatorData.calculation;
+    calculatorData.displayedResults = false;
+    return;
+  } else if (!calculatorData.calculation && buttonValue === '-') {
     calculatorData.calculation += buttonValue;
     resultDisplay.textContent = calculatorData.calculation;
     return;
   } else if (!calculatorData.calculation) return;
-  else if (calculatorData.calculation.slice(-1).match(/[\/+*-]/)) {
+  else if (
+    calculatorData.calculation
+      .slice(-1)
+      .match(/[\/+*-]/ && calculatorData.calculation.length !== 1)
+  ) {
     calculatorData.calculation =
       calculatorData.calculation.slice(0, -1) + buttonValue;
     resultDisplay.textContent = calculatorData.calculation;
-  } else {
+  } else if (calculatorData.calculation.length !== 1) {
     calculatorData.calculation += buttonValue;
     resultDisplay.textContent = calculatorData.calculation;
   }

@@ -4,7 +4,7 @@ const calculatorData = {
   displayedResults: false,
 };
 
-const buttons = [...document.querySelectorAll('[data-action')];
+const buttons = [...document.querySelectorAll('[data-action]')];
 const digitsBtns = buttons.filter((button) =>
   /[0-9]/.test(button.getAttribute('data-action')),
 );
@@ -16,19 +16,20 @@ const resultDisplay = document.querySelector('.result');
 
 function handleDigits(e) {
   const buttonValue = e.target.getAttribute('data-action');
+
   if (calculatorData.displayedResults) {
     calculationDisplay.textContent = '';
-    calculatorData.calculation = calculatorData.result = +buttonValue;
-    resultDisplay.textContent = calculatorData.calculation;
+    calculatorData.calculation = '';
     calculatorData.displayedResults = false;
-  } else if (calculatorData.calculation === 0) calculatorData.calculation = '';
+  } else if (calculatorData.calculation === '0')
+    calculatorData.calculation = '';
 
   calculatorData.calculation += buttonValue;
   resultDisplay.textContent = calculatorData.calculation;
 }
 
 const operatorsBtns = buttons.filter((button) =>
-  /[\/+*-.]/.test(button.getAttribute('data-action')),
+  /[\/+*-]/.test(button.getAttribute('data-action')),
 );
 
 operatorsBtns.forEach((btn) => btn.addEventListener('click', handleOperators));
@@ -46,11 +47,14 @@ function handleOperators(e) {
     calculatorData.calculation += buttonValue;
     resultDisplay.textContent = calculatorData.calculation;
     return;
-  } else if (!calculatorData.calculation) return;
+  } else if (
+    !calculatorData.calculation ||
+    calculatorData.calculation.slice(-1) === '.'
+  )
+    return;
   else if (
-    calculatorData.calculation
-      .slice(-1)
-      .match(/[\/+*-]/ && calculatorData.calculation.length !== 1)
+    calculatorData.calculation.slice(-1).match(/[\/+*-]/) &&
+    calculatorData.calculation.length !== 1
   ) {
     calculatorData.calculation =
       calculatorData.calculation.slice(0, -1) + buttonValue;
@@ -61,13 +65,36 @@ function handleOperators(e) {
   }
 }
 
-const equalBtn = document.querySelector("[data-action='='");
+const decimalButton = document.querySelector("[data-action='.']");
+
+decimalButton.addEventListener('click', handleDecimal);
+
+function handleDecimal() {
+  if (!calculatorData.calculation) return;
+
+  let lastSetOfNumbers = '';
+
+  for (let i = calculatorData.calculation.length - 1; i >= 0; i--) {
+    if (/[\/+*-]/.test(calculatorData.calculation[i])) {
+      break;
+    } else {
+      lastSetOfNumbers += calculatorData.calculation[i];
+    }
+  }
+
+  if (!lastSetOfNumbers.includes('.')) {
+    calculatorData.calculation += '.';
+    resultDisplay.textContent = calculatorData.calculation;
+  }
+}
+
+const equalBtn = document.querySelector("[data-action='=']");
 
 equalBtn.addEventListener('click', handleEqualBtn);
 
 function handleEqualBtn() {
   if (/[\/+*-.]/.test(calculatorData.calculation.slice(-1))) {
-    calculationDisplay.textContent = 'Please end the calculation with a number';
+    calculationDisplay.textContent = 'Terminez le calcul par un chiffre.';
     setTimeout(() => {
       calculationDisplay.textContent = '';
     }, 2500);
@@ -80,15 +107,12 @@ function handleEqualBtn() {
   }
 }
 
-console.log(customEval('11/2'));
-
 function customEval(calculation) {
-  if (!/[\/+*-]/.test(calculation.slice(1))) return;
-  calculation;
+  if (!/[\/+*-]/.test(calculation.slice(1))) return calculation;
 
+  // 550*60
   let operator;
   let operatorIndex;
-
   if (/[\/*]/.test(calculation.slice(1))) {
     for (let i = 1; i < calculation.length; i++) {
       if (/[\/*]/.test(calculation[i])) {
@@ -107,10 +131,10 @@ function customEval(calculation) {
     }
   }
 
-  const operandsInfo = getIndexes(operatorIndex, calculation);
+  //   const operandsInfo = getIndexes(operatorIndex, calculation);
+  console.log(operandsInfo);
 
-  let currentCalculationResult = undefined;
-
+  let currentCalculationResult;
   switch (operator) {
     case '+':
       currentCalculationResult =
@@ -137,9 +161,11 @@ function customEval(calculation) {
     ),
     currentCalculationResult.toString(),
   );
+
   if (/[\/+*-]/.test(updatedCalculation.slice(1))) {
     customEval(updatedCalculation);
   }
+
   if (updatedCalculation.includes('.')) {
     if (updatedCalculation.split('.')[1].length === 1) {
       return Number(updatedCalculation).toString();
@@ -151,6 +177,7 @@ function customEval(calculation) {
   }
 }
 
+// 5500+5065465564+600
 function getIndexes(operatorIndex, calculation) {
   let rightOperand = '';
   let lastRightOperandCharacter;
@@ -188,10 +215,39 @@ function getIndexes(operatorIndex, calculation) {
   }
 
   leftOperand = leftOperand.split('').reverse().join('');
+
   return {
     leftOperand,
     rightOperand,
     startIntervalIndex,
     lastRightOperandCharacter,
   };
+}
+
+const resetButton = document.querySelector("[data-action='c']");
+
+resetButton.addEventListener('click', reset);
+
+function reset() {
+  calculatorData.calculation = '';
+  calculatorData.displayedResults = false;
+  calculatorData.result = '';
+  resultDisplay.textContent = '0';
+  calculationDisplay.textContent = '';
+}
+
+const clearEntryButton = document.querySelector("[data-action='ce']");
+
+clearEntryButton.addEventListener('click', clearEntry);
+
+function clearEntry() {
+  if (!calculatorData.displayedResults) {
+    if (resultDisplay.textContent[0] === '0') return;
+    else if (resultDisplay.textContent.length === 1) {
+      calculatorData.calculation = '0';
+    } else {
+      calculatorData.calculation = calculatorData.calculation.slice(0, -1);
+    }
+    resultDisplay.textContent = calculatorData.calculation;
+  }
 }
